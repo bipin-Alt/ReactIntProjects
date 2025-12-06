@@ -5,13 +5,19 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const { loginFormData, setLoginFormData } = useContext(AuthContext);
-  console.log(setLoginFormData);
+  const { loginFormData, setLoginFormData, loginWithFirebase, setLoading } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const handleOnLogin = (event) => {
     event.preventDefault();
-    console.log(loginFormData);
+   loginWithFirebase().then((results)=>{
+    console.log(results, "Signin Data");
+    if(results){
+      setLoading(false);
+      navigate("/profile");
+    }
+   })
   };
 
   return (

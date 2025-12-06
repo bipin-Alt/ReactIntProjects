@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import auth from "../firebaseConfig";
 
 function AuthState({children}) {
 
@@ -13,9 +15,19 @@ function AuthState({children}) {
       password:"",
       confirmPassword:"",
    })
+  const[loading,setLoading] = useState(false);
+                                                                                                                  
+   const loginWithFirebase =()=>{
+      const{email,password} = loginFormData;
+      return signInWithEmailAndPassword(auth, email, password);
+   }
+   const registerWithFirebase = ()=>{
+      const{email,password} = registerFormData;
+      return createUserWithEmailAndPassword(auth, email, password);
+   }
 
     return ( 
-        <AuthContext.Provider value={{loginFormData, setLoginFormData,registerFormData,setRegisterFormData}}>
+        <AuthContext.Provider value={{loginFormData, setLoginFormData,registerFormData,setRegisterFormData,loginWithFirebase, registerWithFirebase, loading, setLoading}}>
              {
                 children
              }

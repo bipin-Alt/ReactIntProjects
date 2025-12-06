@@ -3,21 +3,40 @@ import CommonForm from "../../components/form/CommonForm";
 import { registerFormControls } from "../../FormControls";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
+import auth from "../../firebaseConfig";
 
 function Register() {
-  const { registerFormData, setRegisterFormData } = useContext(AuthContext);
- 
+  const {
+    registerFormData,
+    setRegisterFormData,
+    registerWithFirebase,
+    setLoading,
+  } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
   const handleOnRegister = (event) => {
     event.preventDefault();
+    registerWithFirebase().then((result) => {
+      console.log("registerData", result);
+      if (result.user) {
+        updateProfile(result.user, {
+          displayName: registerFormData.name,
+        }).then(() => {
+          if (auth.currentUser.displayName) {
+            setLoading(false);
+            navigate("/profile");
+          }
+        });
+      }
+    });
   };
 
   return (
     <>
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
-          
           {/* Heading */}
           <p className="text-3xl font-bold text-center text-gray-800">
             Welcome
@@ -50,7 +69,6 @@ function Register() {
               Login
             </button>
           </div>
-
         </div>
       </div>
     </>
