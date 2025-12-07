@@ -2,8 +2,10 @@ import { useState } from "react";
 import { AuthContext } from "./AuthContext";
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 import auth from "../firebaseConfig";
@@ -53,6 +55,17 @@ function AuthState({ children }) {
     }
   }, [user]);
 
+   const provider = new GoogleAuthProvider();
+  const handleSignInWithGoogle= ()=>{
+    signInWithPopup(auth, provider). then((result)=> {
+     const user = result.user;
+     console.log("User Data", user);
+   }).catch((error)=>{
+    console.log("ERROR:", error);
+    const errorMessage = error.message;
+    console.log( "Error message", errorMessage);
+   })
+  }
   const loginWithFirebase = () => {
     // login with firebase
     const { email, password } = loginFormData;
@@ -77,7 +90,8 @@ function AuthState({ children }) {
         loading,
         setLoading,
         user,
-        handleLogout
+        handleLogout,
+        handleSignInWithGoogle
       }}
     >
       {children}

@@ -20,7 +20,7 @@ function CommonForm({ formControls = [], buttonText, formData,setFormData, onSub
         );
         break;
 
-      default:
+      default:  
         element = (
           <CommonInput
             placeholder={getCurrentFormControls.placeholder}
