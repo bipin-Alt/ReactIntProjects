@@ -12,7 +12,7 @@ function Register() {
     setRegisterFormData,
     registerWithFirebase,
     setLoading,
-    handleSignInWithGoogle
+    handleSignInWithGoogle,
   } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -59,17 +59,17 @@ function Register() {
             formData={registerFormData}
             onSubmit={handleOnRegister}
           />
-             <button
-  onClick={handleSignInWithGoogle}
-  className="mt-4 w-full flex items-center justify-center gap-3 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition font-medium"
->
-  <img
-    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-    alt="Google"
-    className="w-5 h-5"
-  />
-  Register with Google
-</button>
+          <button
+            onClick={handleSignInWithGoogle}
+            className="mt-4 w-full flex items-center justify-center gap-3 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition font-medium"
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            Register with Google
+          </button>
 
           {/* Already have account */}
           <div className="text-center mt-6">

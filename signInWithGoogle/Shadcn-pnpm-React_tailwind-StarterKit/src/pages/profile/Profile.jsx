@@ -7,13 +7,17 @@ function Profile() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg text-center">
-
-        {/* Profile Picture */}
-        <img
+            
+        {
+          user.photoURL? <img
           src={user.photoURL}
           alt={`${user.displayName}'s photo`}
           className="w-28 h-28 rounded-full mx-auto shadow-md object-cover"
-        />
+        /> : <div></div>
+        }
+        
+        {/* Profile Picture */}
+        
 
         {/* Name */}
         <h1 className="text-3xl font-bold text-gray-800 mt-4">
