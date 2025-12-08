@@ -11,7 +11,7 @@ export const counterSlice = createSlice({  // you need to create a slice first
     reducers:{   // then you will have a reducer inside it there could be multiple actions//
         handleIncreaseCountAction: (state, actions)=>{
             console.log(state, actions);
-            
+            state.count ++;
         }
     }
 });
