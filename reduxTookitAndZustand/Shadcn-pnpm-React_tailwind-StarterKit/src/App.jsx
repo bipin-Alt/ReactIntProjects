@@ -1,11 +1,14 @@
-import Button from "./components/Button";
-import Counter from "./components/Counter";
+import AddNewBlog from "./Blog-App/addNewBlog";
+
+
 
 function App() {
   return (
     <>
-      <Button/>
-       <Counter/>
+      <div>
+        <h1>BlogList Application</h1>
+        <AddNewBlog/>
+      </div>
     </>
   );
 }
