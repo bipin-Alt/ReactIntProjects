@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { handleDeleteBlog, SetBlogOnInitialPageLoad } from "../store/slice/blogSlice";
+import { handleDeleteBlog, handleInputChange, setCurrentEditedBlogId, SetBlogOnInitialPageLoad } from "../store/slice/blogSlice";
 import { useDispatch } from "react-redux";
 
 function BlogLists() {
    const dispatch = useDispatch();
    const { blog } = useSelector(state => state);
+   console.log(blog);
    const { blogList } = blog;
    console.log(blogList.map((singleBlog)=>console.log(singleBlog.id)));
    useEffect(() => {
@@ -14,8 +15,16 @@ function BlogLists() {
       ))
    }, [])
 
-   function onDelteBlog (getCurrentId){
+   function onDeleteBlog (getCurrentId){
       dispatch(handleDeleteBlog(getCurrentId));
+   }
+   function handleOnUpdate(getCurrentBlog){
+    
+     dispatch(setCurrentEditedBlogId(getCurrentBlog.id));
+     dispatch (handleInputChange({
+      title :getCurrentBlog?.title,
+      description: getCurrentBlog?.description
+     }))
    }
    return (
       <div className="space-y-6">
@@ -36,10 +45,10 @@ function BlogLists() {
                         </p>
                      </div>
                      <div className="mt-6 flex space-x-3">
-                        <button className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        <button onClick={()=> handleOnUpdate(singleBlog)} className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                            Update
                         </button>
-                        <button onClick={()=>onDelteBlog(singleBlog.id)} className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                        <button onClick={()=>onDeleteBlog(singleBlog.id)} className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
                            Delete
                         </button>
                      </div>

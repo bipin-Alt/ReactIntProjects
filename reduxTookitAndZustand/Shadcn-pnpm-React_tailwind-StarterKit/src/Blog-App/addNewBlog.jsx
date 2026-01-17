@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { handleAddTodo, handleInputChange } from "../store/slice/blogSlice";
+import { handleAddTodo, handleInputChange, handleUpdateBlog, setCurrentEditedBlogId } from "../store/slice/blogSlice";
 
 function AddNewBlog() {
   const { blog } = useSelector((state) => state);
+  const {currentEditedBlogId} = blog;
   console.log("Current State in AddNewBlog Component:", blog);
   const dispatch = useDispatch();
 
@@ -17,7 +18,17 @@ function AddNewBlog() {
   }
   function handleOnSubmit(event) {
     event.preventDefault();
-    dispatch(handleAddTodo());
+    if(currentEditedBlogId !== null){
+      dispatch(handleUpdateBlog());
+    }
+    else{
+      dispatch(handleAddTodo());
+    }
+    if(currentEditedBlogId !== null){dispatch(setCurrentEditedBlogId(null))};
+    dispatch(handleInputChange({
+      title :'',
+      description:''
+    }));
   }
 
   return (
@@ -54,7 +65,9 @@ function AddNewBlog() {
           type="submit"
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
         >
-          Add New Blog
+          {
+            blog?.currentEditedBlogId ? "Update Blog" : "Add New Blog"
+          }
         </button>
       </form>
     </div>
