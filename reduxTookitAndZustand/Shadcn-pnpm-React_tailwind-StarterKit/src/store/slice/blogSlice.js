@@ -42,16 +42,17 @@ export const blogSlice = createSlice({
       state.blogList = Array.isArray(action.payload) ? action.payload : [];
     },
     handleDeleteBlog : (state, action)=>{
-      console.log(action);
+      
       state.blogList = state.blogList.filter((singleBlog)=>singleBlog.id !== action.payload);
       localStorage.setItem("blogList", JSON.stringify(state.blogList));
     },
+
     setCurrentEditedBlogId : (state, action) =>{
-      console.log(action);
+   
       state.currentEditedBlogId = action.payload;
     },
     handleUpdateBlog : (state, action) =>{
-      console.log(action);
+     
       let copyBlogList = [...state.blogList];
       const findIndexOfCurrentBlogItem = copyBlogList.findIndex(singleBlogItem=> singleBlogItem.id === state.currentEditedBlogId);
       console.log(findIndexOfCurrentBlogItem);
