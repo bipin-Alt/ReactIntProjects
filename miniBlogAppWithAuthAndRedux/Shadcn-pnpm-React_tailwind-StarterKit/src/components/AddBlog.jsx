@@ -6,8 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Send } from "lucide-react";
+import { useDispatch } from 'react-redux';
+import { handleBlogAddition } from '../store/slice/blogSlice';
 
 const AddBlog = () => {
+
+    const dispatch = useDispatch();
+
+    const handleOnChange = (e) =>{
+        dispatch(
+            handleBlogAddition({
+               
+        })
+       )
+    }
     return (
         <div className="max-w-4xl mx-auto p-6 md:p-10">
             <div className="mb-8 flex items-center justify-between">
