@@ -14,7 +14,7 @@ const blogInitialState = {
 
 export const blogSlice = createSlice({
     name: "Blog",
-    blogInitialState,
+    initialState: blogInitialState,
    
     reducers : {
             handleBlogAddition : (state, action) =>{
@@ -24,4 +24,4 @@ export const blogSlice = createSlice({
     }
 });
 export const { handleBlogAddition} = blogSlice.actions;
-export default blogSlice.reducer;
+export  const blogReducer = blogSlice.reducer;

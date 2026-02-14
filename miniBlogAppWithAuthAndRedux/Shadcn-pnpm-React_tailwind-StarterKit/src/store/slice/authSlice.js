@@ -18,4 +18,5 @@ export const authSlice = createSlice({
         }
     }
 });
-export default blogSlice.reducer;
+export  const {handleAuth} = authSlice.actions;
+export const authReducer = authSlice.reducer;

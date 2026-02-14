@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,18 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Send } from "lucide-react";
 import { useDispatch } from 'react-redux';
 import { handleBlogAddition } from '../store/slice/blogSlice';
+import { useSelector } from 'react-redux';
 
 const AddBlog = () => {
-
     const dispatch = useDispatch();
+    const formData = useSelector((state)=> state.AddBlog.formData); // here you will get errror because I think you have to use getSlice() method in here//
+    console.log(formData);
 
     const handleOnChange = (e) =>{
         dispatch(
             handleBlogAddition({
-               
+               name : e.target.name,
+               value : e.target.value
         })
-       )
-    }
+       );
+    };
+
     return (
         <div className="max-w-4xl mx-auto p-6 md:p-10">
             <div className="mb-8 flex items-center justify-between">
@@ -44,6 +47,8 @@ const AddBlog = () => {
                         <Label htmlFor="title" className="text-base">Blog Title</Label>
                         <Input
                             id="title"
+                            onChange= {handleOnChange}
+                            value={formData.title}
                             placeholder="Enter a catchy title..."
                             className="py-6 text-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20"
                         />
@@ -52,7 +57,9 @@ const AddBlog = () => {
                     <div className="space-y-2">
                         <Label htmlFor="category" className="text-base">Category (Optional)</Label>
                         <Input
+                        
                             id="category"
+                            onChange ={handleOnChange}
                             placeholder="e.g. Technology, Lifestyle, Food"
                             className="border-gray-200"
                         />
@@ -61,6 +68,8 @@ const AddBlog = () => {
                     <div className="space-y-2">
                         <Label htmlFor="content" className="text-base">Content</Label>
                         <Textarea
+                            onChange = {handleOnChange}
+                            value={value}
                             id="content"
                             placeholder="Write your story here..."
                             className="min-h-[300px] text-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 resize-none p-4"
