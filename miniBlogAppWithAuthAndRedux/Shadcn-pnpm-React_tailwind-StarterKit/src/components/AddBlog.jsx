@@ -11,9 +11,9 @@ import { useSelector } from 'react-redux';
 
 const AddBlog = () => {
     const dispatch = useDispatch();
-    const formData = useSelector((state)=> state.AddBlog.formData); // here you will get errror because I think you have to use getSlice() method in here//
-    console.log(formData);
-
+    const formData = useSelector((state)=> state.blog.formData); // here you will get errror because I think you have to use getSlice() method in here//
+     console.log(formData);
+     
     const handleOnChange = (e) =>{
         dispatch(
             handleBlogAddition({
@@ -69,7 +69,7 @@ const AddBlog = () => {
                         <Label htmlFor="content" className="text-base">Content</Label>
                         <Textarea
                             onChange = {handleOnChange}
-                            value={value}
+                            value={formData.excerpt}
                             id="content"
                             placeholder="Write your story here..."
                             className="min-h-[300px] text-lg border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 resize-none p-4"

@@ -1,22 +1,15 @@
-import AddNewBlog from "./Blog-App/addNewBlog";
-import BlogLists from "./Blog-App/blog-list";
+import CounterValue from "./counterapp/counter-value";
+import ManageCounter from "./counterapp/manage-counter";
+
 
 
 
 function App() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto space-y-12">
-        <h1 className="text-4xl font-extrabold text-gray-900 text-center tracking-tight">
-          BlogList Application
-        </h1>
-        <div className="bg-white shadow sm:rounded-lg p-6">
-          <AddNewBlog />
-        </div>
-        <div className="space-y-6">
-          <BlogLists />
-        </div>
-      </div>
+       <h1>React With Zustand</h1>
+       <ManageCounter/> 
+        <CounterValue/>
     </div>
   );
 }
