@@ -4,6 +4,7 @@ export const Logincontrols= [
         name: "email",
         placeholder: "example@gmail.com",
         type: "email",
+        required:true,
         id: 100,
         componentType: "input"
     },
@@ -12,6 +13,7 @@ export const Logincontrols= [
         name: "password",
         placeholder: "Enter your password",
         type: "password",
+        required:true,
         id : 101,
         componentType: "input"
     }
@@ -22,6 +24,7 @@ export const Signupcontrols = [
         name: "name",
         placeholder: "Enter your name",
         type: "text",
+        required:true,
         id: 200,
         componentType: "input"
     },
@@ -30,6 +33,7 @@ export const Signupcontrols = [
         name: "username",
         placeholder: "Enter your username",
         type: "text",
+        required:false,
         id: 201,
         componentType: "input"
     },
@@ -38,6 +42,7 @@ export const Signupcontrols = [
         name: "email",
         placeholder: "example@gmail.com",
         type: "email",
+        required:true,
         id: 202,
         componentType: "input"
     },
@@ -46,6 +51,7 @@ export const Signupcontrols = [
         name: "password",
         placeholder: "Enter your password",
         type: "password",
+        required:true,
         id: 203,
         componentType: "input"
     },
@@ -54,6 +60,7 @@ export const Signupcontrols = [
         name: "confirm-password",
         placeholder: "Re-type your password",
         type: "password",
+        required:true,
         id: 204,
         componentType: "input"
     }

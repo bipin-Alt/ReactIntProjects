@@ -1,6 +1,4 @@
-import { useState } from "react";
 import CommonInput from "../CommonInput/CommonInput";
-import { Button } from "../ui/button";
 
 const inputType = {
   Input: "input",
@@ -14,6 +12,7 @@ function CommonForm({
   setFormData,
   buttonText,
   onSubmit,
+  errors = {},
 }) {
   const renderFormElement = (currentElement) => {
     let content = null;
@@ -27,8 +26,9 @@ function CommonForm({
             label={currentElement.label}
             value={formData[currentElement.name]}
             name={currentElement.name}
+            error={errors[currentElement.name]}
             onChange={(e) =>
-              setformControls({ ...formData, [e.target.name]: e.target.value })
+              setFormData({ ...formData, [e.target.name]: e.target.value })
             }
           />
         );
@@ -40,13 +40,29 @@ function CommonForm({
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="flex flex-col gap-5 w-full">
       {formControls.length
-        ? formControls.map((item, index) => (
-            <div key={item.id}>{renderFormElement(item)}</div>
-          ))
+        ? formControls.map((item) => (
+          <div key={item.id}>{renderFormElement(item)}</div>
+        ))
         : null}
-      <Button type="submit">{buttonText}</Button>
+
+      <button
+        type="submit"
+        className="
+          mt-2 w-full py-3 rounded-xl
+          bg-gradient-to-r from-violet-600 to-indigo-600
+          text-white font-semibold text-sm tracking-wide
+          shadow-lg shadow-violet-500/30
+          hover:from-violet-500 hover:to-indigo-500
+          hover:shadow-violet-500/50
+          active:scale-[0.98]
+          transition-all duration-200
+          cursor-pointer
+        "
+      >
+        {buttonText}
+      </button>
     </form>
   );
 }
