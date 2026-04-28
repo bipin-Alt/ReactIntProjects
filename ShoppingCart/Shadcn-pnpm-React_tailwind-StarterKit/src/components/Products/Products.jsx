@@ -19,6 +19,15 @@ function Products() {
   // for searching the product
   const [searchTerm, setSearchTerm] = useState("");
 
+  useState(()=>{
+  const timer = setTimeout(()=>{
+    setSearchTerm(searchTerm)
+  },500);
+   return ()=>{
+    clearTimeout(timer);
+   }
+  },[searchTerm])
+
   //This is the search query used for searching an element//
   const searchQuery = useQuery({
     queryKey: ["searchProducts", searchTerm],
@@ -51,9 +60,11 @@ function Products() {
         return nextSkip;
       },
     });
-    
+    //useEffect for debouncing //
 
-    // use of useEffect inorder to automate the fetchnext pagte insted of clicking button//
+
+
+  // use of useEffect inorder to automate the fetchnext pagte insted of clicking button//
   useEffect(() => {
     // Here we have created  the IntersetionObserver which is a browser API it watches an element and tells us that it that element shown in the screeen or not, instead of listening to the scroll event this is fast and efficient way//
     const observer = new IntersectionObserver((entries) => {
@@ -72,18 +83,21 @@ function Products() {
   }, [hasNextPage, fetchNextPage]);
 
   const products = data?.pages.flatMap((page) => page.products) ?? [];
+  const searchResults = searchQuery.data?.products ?? [];
+  const isSearching = searchTerm.length > 0;
+  const displayProducts = isSearching ? searchResults : products;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-4 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-4 py-10 overflow-x-hidden">
       {/* Decorative glow orbs */}
       <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed bottom-1/4 right-1/4 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed top-2/3 left-2/3 w-64 h-64 bg-indigo-800/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* ── Page Header ───────────────────────────────────────── */}
+        {/* ── Page Header ─────────*/}
         <div className="mb-10 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/30 mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/30 mb-4 animate-in fade-in zoom-in duration-500">
             <ShoppingCart size={26} className="text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">
@@ -94,46 +108,56 @@ function Products() {
           </p>
         </div>
 
-        {/* ── Search Bar ─────────────────────────────────────────── */}
-        <div className="mb-8 max-w-xl mx-auto">
-          <div className="relative">
-            <Search
-              size={17}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-            />
-            <Input
-              type="search"
-              name="search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search products…"
-              className="w-full pl-11 pr-10 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-200 text-sm outline-none transition-all duration-200 hover:border-white/20 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
-            />
-            {searchTerm && (
-              <Button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-200 hover:text-white transition-colors cursor-pointer"
-              >
-                {/* <X size={16} /> */}
-              </Button>
-            )}
+        {/* ── Search Bar ───────── */}
+        <div className="mb-12 max-w-xl mx-auto">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-violet-500/20 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="relative">
+              <Search
+                size={18}
+                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-200 ${isSearching ? "text-violet-400" : "text-slate-400"
+                  }`}
+              />
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search products by title, category..."
+                className="w-full pl-12 pr-12 py-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-base outline-none transition-all duration-300 hover:bg-white/[0.08] hover:border-white/20 focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10"
+              />
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  {searchQuery.isFetching && (
+                    <Loader2 size={16} className="text-violet-400 animate-spin" />
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSearchTerm("")}
+                    className="h-8 w-8 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Search result count */}
-          {searchTerm && searchQuery.data && (
-            <p className="text-center text-xs text-slate-400 mt-3">
-              <span className="text-violet-400 font-semibold">
-                {searchQuery.data.products?.length ?? 0}
-              </span>{" "}
-              result{searchQuery.data.products?.length !== 1 ? "s" : ""} for{" "}
-              <span className="text-white font-medium">
-                &ldquo;{searchTerm}&rdquo;
-              </span>
-            </p>
+          {/* Search stats */}
+          {isSearching && !searchQuery.isFetching && searchQuery.data && (
+            <div className="flex justify-center mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                <p className="text-xs text-slate-400">
+                  Found <span className="text-violet-400 font-bold">{searchResults.length}</span>{" "}
+                  {searchResults.length === 1 ? "product" : "products"} for{" "}
+                  <span className="text-white font-medium italic">&ldquo;{searchTerm}&rdquo;</span>
+                </p>
+              </div>
+            </div>
           )}
         </div>
 
-        {/* ── Initial Loading ────────────────────────────────────── */}
+        {/* ── Initial Loading ──────*/}
         {status === "pending" && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {Array.from({ length: 10 }).map((_, i) => (
@@ -152,7 +176,7 @@ function Products() {
           </div>
         )}
 
-        {/* ── Error State ────────────────────────────────────────── */}
+        {/* ── Error State ──────────*/}
         {status === "error" && (
           <div className="flex flex-col items-center gap-4 py-24 text-center">
             <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
@@ -163,19 +187,19 @@ function Products() {
           </div>
         )}
 
-        {/* ── Product Grid ───────────────────────────────────────── */}
-        {products.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {products.map((product) => {
+        {/* ── Product Grid ─────────*/}
+        {displayProducts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {displayProducts.map((product) => {
               const avgRating = product.reviews?.length
                 ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
-                  product.reviews.length
+                product.reviews.length
                 : null;
 
               return (
                 <div
                   key={product.id}
-                  className="group relative flex flex-col backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:border-violet-500/40 hover:shadow-violet-500/10 hover:shadow-xl transition-all duration-300"
+                  className="group relative flex flex-col backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:border-violet-500/40 hover:shadow-violet-500/10 hover:shadow-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100"
                 >
                   {/* Thumbnail */}
                   <div className="relative overflow-hidden bg-white/5 aspect-square">
@@ -231,28 +255,52 @@ function Products() {
               );
             })}
           </div>
+        ) : (
+          !searchQuery.isFetching && isSearching && (
+            <div className="flex flex-col items-center gap-6 py-24 text-center animate-in fade-in zoom-in duration-500">
+              <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-xl">
+                <PackageSearch size={32} className="text-slate-500" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-white text-lg font-semibold">No products found</p>
+                <p className="text-slate-400 text-sm max-w-xs mx-auto">
+                  We couldn't find any products matching &ldquo;{searchTerm}&rdquo;.
+                  Try searching for a different keyword.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setSearchTerm("")}
+                className="mt-2 border-white/10 text-white hover:bg-white/5 rounded-xl px-6 cursor-pointer"
+              >
+                Clear Search
+              </Button>
+            </div>
+          )
         )}
 
-        {/* ── Infinite Scroll Sentinel ───────────────────────────── */}
+        {/* ── Infinite Scroll----------*/}
 
-        <div ref={loadMoreRef} className="flex justify-center items-center py-10 mt-4">
-          {isFetchingNextPage && (
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 size={28} className="text-violet-400 animate-spin" />
-              <span className="text-slate-400 text-xs tracking-wide">
-                Loading more products…
-              </span>
-            </div>
-          )}
-          {!hasNextPage && products.length > 0 && !isFetchingNextPage && (
-            <div className="flex flex-col items-center gap-2 opacity-60">
-              <div className="h-px w-40 bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
-              <p className="text-slate-500 text-xs">
-                You&apos;ve seen all products
-              </p>
-            </div>
-          )}
-        </div>
+        {!isSearching && (
+          <div ref={loadMoreRef} className="flex justify-center items-center py-12 mt-8">
+            {isFetchingNextPage && (
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 size={28} className="text-violet-400 animate-spin" />
+                <span className="text-slate-400 text-xs tracking-wide">
+                  Loading more products…
+                </span>
+              </div>
+            )}
+            {!hasNextPage && products.length > 0 && !isFetchingNextPage && (
+              <div className="flex flex-col items-center gap-2 opacity-60">
+                <div className="h-px w-40 bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+                <p className="text-slate-500 text-xs">
+                  You&apos;ve seen all products
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
