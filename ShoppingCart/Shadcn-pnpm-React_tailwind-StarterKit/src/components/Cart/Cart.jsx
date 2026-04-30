@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import useCart from "../../store/useCart";
 import {
   ShoppingCart,
@@ -10,7 +11,9 @@ import {
 
 function Cart() {
   const { Cartproducts, actions } = useCart((state) => state);
-  // Calculate subtotal
+
+
+  // Calculate subtotal this can be done in the Store and also sent to the checkout.jsx to send the total price to the backend but for now it's fine//
   const subtotal = Cartproducts.reduce(
     (acc, item) => acc + (item.price || 0) * (item.quantity || 1),
     0
@@ -149,9 +152,9 @@ function Cart() {
                   </div>
                 </div>
 
-                <button className="w-full mt-6 py-3.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold tracking-wide shadow-lg shadow-violet-500/25 hover:from-violet-500 hover:to-indigo-500 hover:shadow-violet-500/40 active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center justify-center gap-2">
+                <button  className="w-full mt-6 py-3.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold tracking-wide shadow-lg shadow-violet-500/25 hover:from-violet-500 hover:to-indigo-500 hover:shadow-violet-500/40 active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center justify-center gap-2">
                   <ShoppingCart size={18} />
-                  Proceed to Checkout
+                  <Link to={"/checkout"}>Proceed to Checkout</Link>
                 </button>
               </div>
             </div>

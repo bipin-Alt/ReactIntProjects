@@ -23,8 +23,9 @@ function CommonForm({
             type={currentElement.type}
             placeholder={currentElement.placeholder}
             id={currentElement.id}
+            required={currentElement.required}
             label={currentElement.label}
-            value={formData[currentElement.name]}
+            value={formData[currentElement.name]?? ""}
             name={currentElement.name}
             error={errors[currentElement.name]}
             onChange={(e) =>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 
-function CommonInput({ name, label, id, placeholder, value, type, onChange, error }) {
+function CommonInput({ name, label, id, placeholder, value, type, onChange, error,required }) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
@@ -23,6 +23,7 @@ function CommonInput({ name, label, id, placeholder, value, type, onChange, erro
           type={inputType}
           onChange={onChange}
           value={value}
+          required={required}
           className={`
             w-full px-4 py-3 rounded-xl
             bg-white/5 border
