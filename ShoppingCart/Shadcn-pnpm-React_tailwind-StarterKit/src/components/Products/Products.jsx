@@ -6,50 +6,49 @@ import {
   Star,
   X,
   PackageSearch,
+  ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect } from "react";
 import { useRef } from "react";
+import useCart from "../../store/useCart";
 
 function Products() {
   const loadMoreRef = useRef(null);
-
+  const {actions}= useCart((state)=>state);
   // for searching the product
   const [searchTerm, setSearchTerm] = useState("");
-
-  useState(()=>{
-  const timer = setTimeout(()=>{
-    setSearchTerm(searchTerm)
-  },500);
-   return ()=>{
-    clearTimeout(timer);
-   }
-  },[searchTerm])
-
-  //This is the search query used for searching an element//
-  const searchQuery = useQuery({
-    queryKey: ["searchProducts", searchTerm],
-    queryFn: async () => {
-      const response = await fetch(
-        `https://dummyjson.com/products/search?q=${searchTerm}`,
-      );
-      if (!response.ok) throw new Error("Couldn't find the product");
-      return response.json();
-    },
-    enabled: searchTerm.length > 0,
-  });
+  //for sort option
+  const [sortOption, setSortOption] = useState("default");
+  //useEffect for debouncing //
+  useState(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(searchTerm);
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
 
   //we need to use tanstack hook called useInfiniteQuery//
   //for fetching the products with limit //
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useInfiniteQuery({
-      queryKey: ["products"],
+      queryKey: ["products", searchTerm, sortOption],
       queryFn: async ({ pageParam = 0 }) => {
-        const response = await fetch(
-          `https://dummyjson.com/products?limit=10&skip=${pageParam}&select=title,price,thumbnail,reviews`,
-        );
+        let url = `https://dummyjson.com/products?limit=10&skip=${pageParam}&select=title,price,thumbnail,reviews,likes`;
+        if (searchTerm) {
+          url = `https://dummyjson.com/products/search?q=${searchTerm}`;
+        }
+
+        if (sortOption === "Price High to low") {
+          url += "&sortBy=price&order=desc";
+        } else if (sortOption === "Price low to High") {
+          url += "&sortBy=price&order=asc";
+        }
+        const response = await fetch(url);
         if (!response.ok) throw new Error("Failed to fetch Products");
         return response.json();
       },
@@ -60,10 +59,6 @@ function Products() {
         return nextSkip;
       },
     });
-    //useEffect for debouncing //
-
-
-
   // use of useEffect inorder to automate the fetchnext pagte insted of clicking button//
   useEffect(() => {
     // Here we have created  the IntersetionObserver which is a browser API it watches an element and tells us that it that element shown in the screeen or not, instead of listening to the scroll event this is fast and efficient way//
@@ -83,10 +78,7 @@ function Products() {
   }, [hasNextPage, fetchNextPage]);
 
   const products = data?.pages.flatMap((page) => page.products) ?? [];
-  const searchResults = searchQuery.data?.products ?? [];
   const isSearching = searchTerm.length > 0;
-  const displayProducts = isSearching ? searchResults : products;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 px-4 py-10 overflow-x-hidden">
       {/* Decorative glow orbs */}
@@ -127,8 +119,11 @@ function Products() {
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  {searchQuery.isFetching && (
-                    <Loader2 size={16} className="text-violet-400 animate-spin" />
+                  {status !== "pending" && products.length === 0 && (
+                    <Loader2
+                      size={16}
+                      className="text-violet-400 animate-spin"
+                    />
                   )}
                   <Button
                     variant="ghost"
@@ -143,14 +138,45 @@ function Products() {
             </div>
           </div>
 
+          {/* Sorting selection div */}
+          <div className="mt-4 flex justify-between items-center px-2 animate-in fade-in slide-in-from-top-2 duration-500">
+            <span className="text-sm text-slate-400 font-medium">Sort by:</span>
+            <div className="relative w-52 group">
+              <div className="absolute inset-0 bg-violet-500/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="relative appearance-none w-full bg-slate-900/50 backdrop-blur-md border border-white/10 text-white text-sm rounded-xl pl-4 pr-10 py-2.5 outline-none transition-all duration-300 hover:bg-white/[0.08] hover:border-white/20 focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/10 cursor-pointer shadow-lg shadow-black/20"
+              >
+                <option value="default" className="bg-slate-900 text-white">
+                  Default
+                </option>
+                <option value="Price High to low" className="bg-slate-900 text-white">
+                  Price: High to Low
+                </option>
+                <option value="Price low to High" className="bg-slate-900 text-white">
+                  Price: Low to High
+                </option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-violet-400 group-hover:text-violet-300 transition-colors duration-300">
+                <ChevronDown size={16} />
+              </div>
+            </div>
+          </div>
+
           {/* Search stats */}
-          {isSearching && !searchQuery.isFetching && searchQuery.data && (
+          {status !== "pending" && isSearching && products.length === 0 && (
             <div className="flex justify-center mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                 <p className="text-xs text-slate-400">
-                  Found <span className="text-violet-400 font-bold">{searchResults.length}</span>{" "}
-                  {searchResults.length === 1 ? "product" : "products"} for{" "}
-                  <span className="text-white font-medium italic">&ldquo;{searchTerm}&rdquo;</span>
+                  Found{" "}
+                  <span className="text-violet-400 font-bold">
+                    {products.length}
+                  </span>{" "}
+                  {products.length === 1 ? "product" : "products"} for{" "}
+                  <span className="text-white font-medium italic">
+                    &ldquo;{searchTerm}&rdquo;
+                  </span>
                 </p>
               </div>
             </div>
@@ -188,9 +214,9 @@ function Products() {
         )}
 
         {/* ── Product Grid ─────────*/}
-        {displayProducts.length > 0 ? (
+        {products.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {displayProducts.map((product) => {
+            {products.map((product) => {
               const avgRating = product.reviews?.length
                 ? product.reviews.reduce((sum, r) => sum + r.rating, 0) /
                 product.reviews.length
@@ -245,7 +271,7 @@ function Products() {
 
                     {/* Add to Cart */}
                     <div className="mt-auto pt-3">
-                      <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-semibold tracking-wide shadow-lg shadow-violet-500/25 hover:from-violet-500 hover:to-indigo-500 hover:shadow-violet-500/40 active:scale-[0.97] transition-all duration-200 cursor-pointer">
+                      <button onClick={()=>{actions.addToCart(product)}} className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-semibold tracking-wide shadow-lg shadow-violet-500/25 hover:from-violet-500 hover:to-indigo-500 hover:shadow-violet-500/40 active:scale-[0.97] transition-all duration-200 cursor-pointer">
                         <ShoppingCart size={14} />
                         Add to Cart
                       </button>
@@ -256,16 +282,20 @@ function Products() {
             })}
           </div>
         ) : (
-          !searchQuery.isFetching && isSearching && (
+          status !== "pending" &&
+          isSearching &&
+          products.length === 0 && (
             <div className="flex flex-col items-center gap-6 py-24 text-center animate-in fade-in zoom-in duration-500">
               <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-xl">
                 <PackageSearch size={32} className="text-slate-500" />
               </div>
               <div className="space-y-2">
-                <p className="text-white text-lg font-semibold">No products found</p>
+                <p className="text-white text-lg font-semibold">
+                  No products found
+                </p>
                 <p className="text-slate-400 text-sm max-w-xs mx-auto">
-                  We couldn't find any products matching &ldquo;{searchTerm}&rdquo;.
-                  Try searching for a different keyword.
+                  We couldn't find any products matching &ldquo;{searchTerm}
+                  &rdquo;. Try searching for a different keyword.
                 </p>
               </div>
               <Button
@@ -282,7 +312,10 @@ function Products() {
         {/* ── Infinite Scroll----------*/}
 
         {!isSearching && (
-          <div ref={loadMoreRef} className="flex justify-center items-center py-12 mt-8">
+          <div
+            ref={loadMoreRef}
+            className="flex justify-center items-center py-12 mt-8"
+          >
             {isFetchingNextPage && (
               <div className="flex flex-col items-center gap-3">
                 <Loader2 size={28} className="text-violet-400 animate-spin" />
